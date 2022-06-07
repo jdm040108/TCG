@@ -16,13 +16,13 @@ public class CardManager : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             for (int i = 0; i < Card.Count; i++)
             {
                 Card[i].beforeTransform = Card[i].transform.position;
             }
-                cardLineCo = CardLineUp();
+            cardLineCo = CardLineUp();
             StartCoroutine(cardLineCo);
         }
     }
@@ -34,7 +34,7 @@ public class CardManager : MonoBehaviour
             if (nowChoiceCard != null)
             {
                 nowChoiceCard.isChoice = false;
-                nowChoiceCard.transform.position =new Vector2(nowChoiceCard.beforeTransform.x,0-2.5f);
+                nowChoiceCard.transform.position = new Vector2(nowChoiceCard.beforeTransform.x, 0 - 2.5f);
                 nowChoiceCard.transform.localScale = new Vector3(5, 5, 1);
                 for (int i = 0; i < Card.Count; i++)
                 {
@@ -166,7 +166,7 @@ public class CardManager : MonoBehaviour
 
         while (ChangeCard.transform.position.x != temp.x)
         {
-            ChangeCard.transform.position = Vector2.MoveTowards(ChangeCard.transform.position, new Vector2(temp.x,0-2.5f), 0.1f);
+            ChangeCard.transform.position = Vector2.MoveTowards(ChangeCard.transform.position, new Vector2(temp.x, 0 - 2.5f), 0.1f);
             yield return new WaitForSeconds(Time.deltaTime);
         }
         ChangeCard.isChange = false;
@@ -200,27 +200,12 @@ public class CardManager : MonoBehaviour
         Vector2 tempTranse = new Vector2();
         int tempLayer = 0;
 
-        for(int k = 0; k<2;k++)
-        for (int i=0;i<Card.Count;i++)
-        {
-            for (int j = 0; j < Card.Count; j++)
+        for (int k = 0; k < 2; k++)
+            for (int i = 0; i < Card.Count; i++)
             {
-                if(Card[i].PriorityCardNum < Card[j].PriorityCardNum)
+                for (int j = 0; j < Card.Count; j++)
                 {
-                    if(Card[i].sprite.sortingOrder > Card[j].sprite.sortingOrder)
-                    {
-                        tempTranse = Card[i].beforeTransform;
-                        Card[i].beforeTransform = Card[j].beforeTransform;
-                        Card[j].beforeTransform = tempTranse;
-
-                        tempLayer = Card[i].sprite.sortingOrder;
-                        Card[i].sprite.sortingOrder = Card[j].sprite.sortingOrder;
-                        Card[j].sprite.sortingOrder = tempLayer;
-                    }
-                }
-                else if(Card[i].PriorityCardNum == Card[j].PriorityCardNum)
-                {
-                    if(Card[i].PriorityCardPattern < Card[j].PriorityCardPattern)
+                    if (Card[i].PriorityCardNum < Card[j].PriorityCardNum)
                     {
                         if (Card[i].sprite.sortingOrder > Card[j].sprite.sortingOrder)
                         {
@@ -233,36 +218,51 @@ public class CardManager : MonoBehaviour
                             Card[j].sprite.sortingOrder = tempLayer;
                         }
                     }
-                }         
-
-                else if (Card[i].PriorityCardNum > Card[j].PriorityCardNum)
-                {
-                    if (Card[i].sprite.sortingOrder < Card[j].sprite.sortingOrder)
+                    else if (Card[i].PriorityCardNum == Card[j].PriorityCardNum)
                     {
-                        tempTranse = Card[i].beforeTransform;
-                        Card[i].beforeTransform = Card[j].beforeTransform;
-                        Card[j].beforeTransform = tempTranse;
+                        if (Card[i].PriorityCardPattern < Card[j].PriorityCardPattern)
+                        {
+                            if (Card[i].sprite.sortingOrder > Card[j].sprite.sortingOrder)
+                            {
+                                tempTranse = Card[i].beforeTransform;
+                                Card[i].beforeTransform = Card[j].beforeTransform;
+                                Card[j].beforeTransform = tempTranse;
 
-                        tempLayer = Card[i].sprite.sortingOrder;
-                        Card[i].sprite.sortingOrder = Card[j].sprite.sortingOrder;
-                        Card[j].sprite.sortingOrder = tempLayer;
+                                tempLayer = Card[i].sprite.sortingOrder;
+                                Card[i].sprite.sortingOrder = Card[j].sprite.sortingOrder;
+                                Card[j].sprite.sortingOrder = tempLayer;
+                            }
+                        }
+                    }
+
+                    else if (Card[i].PriorityCardNum > Card[j].PriorityCardNum)
+                    {
+                        if (Card[i].sprite.sortingOrder < Card[j].sprite.sortingOrder)
+                        {
+                            tempTranse = Card[i].beforeTransform;
+                            Card[i].beforeTransform = Card[j].beforeTransform;
+                            Card[j].beforeTransform = tempTranse;
+
+                            tempLayer = Card[i].sprite.sortingOrder;
+                            Card[i].sprite.sortingOrder = Card[j].sprite.sortingOrder;
+                            Card[j].sprite.sortingOrder = tempLayer;
+                        }
                     }
                 }
-            }    
-        }
+            }
 
         float dLineTime = 0;
 
-        while (dLineTime <= 10f)
+        while (dLineTime <= 0.3f)
+        {
+            dLineTime += Time.deltaTime;
+            for (int i = 0; i < Card.Count; i++)
             {
-                dLineTime += Time.deltaTime;
-                for (int i = 0; i < Card.Count; i++)
-                {
                 Card[i].transform.position = Vector2.MoveTowards(Card[i].transform.position, new Vector2(Card[i].beforeTransform.x, 0 - 2.5f), 0.1f);
-                }
-                yield return new WaitForSeconds(Time.deltaTime); 
             }
-            StopCoroutine(cardLineCo);
-        
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+        StopCoroutine(cardLineCo);
+
     }
 }
